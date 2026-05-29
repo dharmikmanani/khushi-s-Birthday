@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 🎂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400&family=Pacifico&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --lavender: #c9b8e8;
+    --blush: #f2b8c6;
+    --gold: #f0d080;
+    --sky: #a8d8ea;
+    --soft-white: #fdf6ff;
+    --deep-night: #0d0820;
+    --mid-night: #1a1035;
+    --card-bg: rgba(255,255,255,0.07);
+    --glass-border: rgba(255,255,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--deep-night);
+    color: var(--soft-white);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── CANVAS STARS ── */
+  #starCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── FLOATING PARTICLES ── */
+  .particles-wrap {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0;
+    animation: floatUp var(--dur) var(--delay) infinite ease-in-out;
+    background: radial-gradient(circle, var(--c) 0%, transparent 70%);
+  }
+  @keyframes floatUp {
+    0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+    10%  { opacity: 0.7; }
+    90%  { opacity: 0.4; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+  }
+
+  /* ── BALLOONS ── */
+  .balloons-wrap {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .balloon {
+    position: absolute;
+    bottom: -150px;
+    width: 40px;
+    height: 50px;
+    border-radius: 50% 50% 50% 50% / 55% 55% 45% 45%;
+    animation: floatBalloon var(--bdur) var(--bdelay) infinite ease-in-out;
+    opacity: 0.65;
+  }
+  .balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 20px;
+    background: rgba(255,255,255,0.4);
+  }
+  @keyframes floatBalloon {
+    0%   { transform: translateY(0) rotate(-3deg); opacity: 0; }
+    5%   { opacity: 0.65; }
+    50%  { transform: translateY(-110vh) rotate(3deg); opacity: 0.65; }
+    100% { transform: translateY(-120vh) rotate(-3deg); opacity: 0; }
+  }
+
+  /* ── SCROLL WRAPPER ── */
+  .page { position: relative; z-index: 2; }
+
+  /* ── SECTION BASE ── */
+  section {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    position: relative;
+  }
+
+  /* ── INTRO ── */
+  #intro {
+    background: radial-gradient(ellipse at 30% 60%, rgba(201,184,232,0.18) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(242,184,198,0.15) 0%, transparent 50%);
+    text-align: center;
+    gap: 20px;
+  }
+  .intro-pre {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(12px,2.5vw,16px);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--lavender);
+    opacity: 0;
+    animation: fadeSlideUp 1s 0.4s forwards;
+  }
+  .intro-title {
+    font-family: 'Pacifico', cursive;
+    font-size: clamp(38px, 10vw, 90px);
+    background: linear-gradient(135deg, var(--blush), var(--lavender), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+    opacity: 0;
+    animation: fadeSlideUp 1s 0.7s forwards;
+    filter: drop-shadow(0 0 30px rgba(201,184,232,0.4));
+  }
+  .intro-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(18px, 4vw, 28px);
+    font-style: italic;
+    color: rgba(253,246,255,0.75);
+    opacity: 0;
+    animation: fadeSlideUp 1s 1s forwards;
+  }
+  .intro-emoji-row {
+    font-size: clamp(24px, 5vw, 40px);
+    opacity: 0;
+    animation: fadeSlideUp 1s 1.3s forwards, gentleBounce 3s 2.5s infinite;
+    letter-spacing: 8px;
+  }
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeSlideUp 1s 2s forwards;
+    color: rgba(253,246,255,0.45);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .scroll-hint span {
+    display: block;
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(201,184,232,0.8), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+  @keyframes scrollPulse {
+    0%,100% { opacity: 0.3; transform: scaleY(0.8); }
+    50%      { opacity: 1; transform: scaleY(1); }
+  }
+
+  /* ── SECTION HEADERS ── */
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--lavender);
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 6vw, 52px);
+    font-weight: 300;
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .section-desc {
+    font-size: clamp(14px, 2.5vw, 16px);
+    color: rgba(253,246,255,0.55);
+    text-align: center;
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  /* ── GLASS CARD ── */
+  .glass {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 20px;
+  }
+
+  /* ── MEMORY BOXES ── */
+  #memories {
+    background: radial-gradient(ellipse at 70% 40%, rgba(168,216,234,0.1) 0%, transparent 55%);
+    gap: 48px;
+  }
+  .memory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+  }
+  .memory-box {
+    padding: 28px 24px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), box-shadow 0.35s ease;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+  }
+  .memory-box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--g1), var(--g2));
+    opacity: 0.12;
+    transition: opacity 0.3s;
+    border-radius: inherit;
+  }
+  .memory-box:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+  .memory-box:hover::before { opacity: 0.22; }
+  .memory-icon { font-size: 40px; margin-bottom: 14px; display: block; }
+  .memory-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-style: italic;
+    margin-bottom: 10px;
+    color: var(--soft-white);
+  }
+  .memory-text { font-size: 14px; color: rgba(253,246,255,0.6); line-height: 1.6; }
+  .memory-reveal {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--lavender);
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.4s, max-height 0.5s;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  .memory-box.open .memory-reveal { opacity: 1; max-height: 120px; }
+
+  /* ── APPRECIATION NOTES ── */
+  #notes {
+    background: radial-gradient(ellipse at 20% 70%, rgba(242,184,198,0.12) 0%, transparent 55%);
+    gap: 48px;
+  }
+  .notes-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    max-width: 860px;
+  }
+  .note-card {
+    width: clamp(160px, 40vw, 200px);
+    padding: 22px 18px;
+    border-radius: 16px;
+    text-align: center;
+    position: relative;
+    transform: rotate(var(--rot));
+    transition: transform 0.35s cubic-bezier(.34,1.56,.64,1);
+  }
+  .note-card:hover { transform: rotate(0deg) scale(1.06) translateY(-6px); z-index: 10; }
+  .note-card .note-icon { font-size: 30px; margin-bottom: 10px; }
+  .note-card .note-text { font-size: 13px; line-height: 1.6; color: rgba(253,246,255,0.75); }
+
+  /* ── ADORABLE THINGS ── */
+  #adorable {
+    background: radial-gradient(ellipse at 60% 30%, rgba(240,208,128,0.1) 0%, transparent 55%);
+    gap: 48px;
+  }
+  .adorable-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 600px;
+    width: 100%;
+  }
+  .adorable-item {
+    padding: 18px 24px;
+    border-radius: 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.5s, transform 0.5s;
+  }
+  .adorable-item.visible { opacity: 1; transform: translateX(0); }
+  .adorable-item .a-num {
+    font-family: 'Pacifico', cursive;
+    font-size: 22px;
+    color: var(--gold);
+    min-width: 30px;
+    line-height: 1;
+  }
+  .adorable-item .a-content {}
+  .adorable-item .a-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    margin-bottom: 4px;
+    color: var(--blush);
+  }
+  .adorable-item .a-desc { font-size: 13px; color: rgba(253,246,255,0.6); line-height: 1.6; }
+
+  /* ── BIRTHDAY CAKE ── */
+  #cake {
+    background: radial-gradient(ellipse at 50% 50%, rgba(201,184,232,0.12) 0%, transparent 60%);
+    gap: 40px;
+  }
+  .cake-wrap { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+  .cake-svg-wrap { position: relative; width: clamp(200px, 50vw, 280px); }
+  svg#cakeSvg { width: 100%; height: auto; }
+  .flame {
+    transform-origin: center bottom;
+    animation: flicker 0.4s infinite alternate;
+  }
+  @keyframes flicker {
+    from { transform: scaleY(1) skewX(-2deg); opacity: 1; }
+    to   { transform: scaleY(0.9) skewX(2deg); opacity: 0.85; }
+  }
+  #blowBtn {
+    padding: 14px 38px;
+    border: none;
+    border-radius: 50px;
+    background: linear-gradient(135deg, var(--blush), var(--lavender));
+    color: var(--deep-night);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    letter-spacing: 0.5px;
+  }
+  #blowBtn:hover { transform: scale(1.05); box-shadow: 0 8px 30px rgba(201,184,232,0.4); }
+  #blowBtn:active { transform: scale(0.97); }
+  #cakeMsg {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(16px,3.5vw,22px);
+    font-style: italic;
+    text-align: center;
+    max-width: 420px;
+    color: rgba(253,246,255,0.8);
+    min-height: 50px;
+    line-height: 1.6;
+    transition: opacity 0.5s;
+  }
+
+  /* ── MESSAGE ── */
+  #message {
+    background: radial-gradient(ellipse at 40% 60%, rgba(168,216,234,0.1) 0%, transparent 55%);
+    gap: 48px;
+  }
+  .msg-card {
+    max-width: 640px;
+    padding: clamp(28px, 5vw, 48px);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .msg-card::before {
+    content: '✉';
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 80px;
+    opacity: 0.04;
+    line-height: 1;
+  }
+  .msg-para {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(17px, 3vw, 22px);
+    line-height: 1.8;
+    color: rgba(253,246,255,0.85);
+    margin-bottom: 20px;
+  }
+  .msg-para:last-child { margin-bottom: 0; }
+  .msg-para em { color: var(--blush); font-style: italic; }
+  .msg-sign {
+    margin-top: 28px;
+    font-family: 'Pacifico', cursive;
+    font-size: 20px;
+    color: var(--lavender);
+  }
+
+  /* ── FINAL SURPRISE ── */
+  #final {
+    background: radial-gradient(ellipse at 50% 50%, rgba(201,184,232,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(242,184,198,0.12) 0%, transparent 50%);
+    gap: 28px;
+    text-align: center;
+  }
+  .final-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(20px, 5vw, 36px);
+    font-style: italic;
+    font-weight: 300;
+    max-width: 660px;
+    line-height: 1.5;
+    color: rgba(253,246,255,0.9);
+  }
+  .final-quote em {
+    background: linear-gradient(135deg, var(--blush), var(--lavender));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-style: normal;
+    font-weight: 400;
+  }
+  .confetti-btn {
+    margin-top: 10px;
+    padding: 16px 44px;
+    border: 1.5px solid rgba(201,184,232,0.5);
+    border-radius: 50px;
+    background: transparent;
+    color: var(--soft-white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background 0.3s, transform 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .confetti-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(201,184,232,0.2), rgba(242,184,198,0.2));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .confetti-btn:hover::before { opacity: 1; }
+  .confetti-btn:hover { transform: scale(1.04); }
+  .final-small {
+    font-size: 13px;
+    color: rgba(253,246,255,0.35);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 30px;
+  }
+
+  /* ── CONFETTI CANVAS ── */
+  #confettiCanvas {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+  }
+
+  /* ── LOADING SCREEN ── */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: var(--deep-night);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    transition: opacity 0.8s, visibility 0.8s;
+  }
+  #loader.hidden { opacity: 0; visibility: hidden; }
+  .loader-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-style: italic;
+    color: var(--lavender);
+    letter-spacing: 2px;
+    animation: pulse 1.5s infinite;
+  }
+  .loader-dots { display: flex; gap: 10px; }
+  .loader-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--lavender);
+    animation: dotBounce 1.2s infinite;
+  }
+  .loader-dot:nth-child(2) { animation-delay: 0.2s; background: var(--blush); }
+  .loader-dot:nth-child(3) { animation-delay: 0.4s; background: var(--gold); }
+  @keyframes dotBounce {
+    0%,80%,100% { transform: translateY(0); opacity: 0.5; }
+    40%          { transform: translateY(-12px); opacity: 1; }
+  }
+  @keyframes pulse { 0%,100%{opacity:0.5} 50%{opacity:1} }
+
+  /* ── GENERAL ANIMS ── */
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes gentleBounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  /* ── REVEAL ON SCROLL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--lavender), transparent);
+    margin: 0 auto 12px;
+  }
+
+  /* ── GLOW ── */
+  .glow-text {
+    text-shadow: 0 0 30px rgba(201,184,232,0.6), 0 0 60px rgba(242,184,198,0.3);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .memory-grid { grid-template-columns: 1fr 1fr; }
+    .note-card { width: calc(50vw - 24px); }
+    .msg-card { padding: 24px 20px; }
+  }
+  @media (max-width: 380px) {
+    .memory-grid { grid-template-columns: 1fr; }
+    .note-card { width: 90vw; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-text">preparing something special for you…</div>
+  <div class="loader-dots">
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+    <div class="loader-dot"></div>
+  </div>
+</div>
+
+<!-- CANVAS BACKGROUNDS -->
+<canvas id="starCanvas"></canvas>
+<div class="particles-wrap" id="particlesWrap"></div>
+<div class="balloons-wrap" id="balloonsWrap"></div>
+<canvas id="confettiCanvas"></canvas>
+
+<div class="page">
+
+  <!-- ① INTRO -->
+  <section id="intro">
+    <p class="intro-pre">A little something made just for you</p>
+    <h1 class="intro-title glow-text">Happy Birthday ✨</h1>
+    <p class="intro-sub">Today the universe paused to celebrate you.</p>
+    <div class="intro-emoji-row">🎈 🌸 🎂 🌙 💫</div>
+    <div class="scroll-hint">
+      scroll down <span></span>
+    </div>
+  </section>
+
+  <!-- ② MEMORY GIFT BOXES -->
+  <section id="memories">
+    <p class="section-label reveal">Chapter 2</p>
+    <div class="divider reveal"></div>
+    <h2 class="section-title reveal">Little <em>Memory</em> Gifts 🎁</h2>
+    <p class="section-desc reveal">Tap each one. They're all yours.</p>
+    <div class="memory-grid">
+      <div class="memory-box glass reveal" style="--g1:#c9b8e8;--g2:#f2b8c6;" onclick="toggleMemory(this)">
+        <span class="memory-icon">🌙</span>
+        <p class="memory-title">Late Night Vibes</p>
+        <p class="memory-text">Those conversations that stretched past midnight without either of us realizing…</p>
+        <p class="memory-reveal">"The world gets quieter after midnight, and somehow our words got louder. I loved those hours with you."</p>
+      </div>
+      <div class="memory-box glass reveal" style="--g1:#f0d080;--g2:#a8d8ea;" onclick="toggleMemory(this)">
+        <span class="memory-icon">😂</span>
+        <p class="memory-title">That One Time…</p>
+        <p class="memory-text">You know exactly which moment this is. The one we still laugh about.</p>
+        <p class="memory-reveal">"I'm still not over it. And I don't think I ever want to be."</p>
+      </div>
+      <div class="memory-box glass reveal" style="--g1:#f2b8c6;--g2:#c9b8e8;" onclick="toggleMemory(this)">
+        <span class="memory-icon">🎵</span>
+        <p class="memory-title">Our Kind of Music</p>
+        <p class="memory-text">Songs that hit differently after they became connected to you.</p>
+        <p class="memory-reveal">"There are certain songs I can't listen to without thinking of you now. Funny how that happens."</p>
+      </div>
+      <div class="memory-box glass reveal" style="--g1:#a8d8ea;--g2:#f0d080;" onclick="toggleMemory(this)">
+        <span class="memory-icon">✨</span>
+        <p class="memory-title">The Small Things</p>
+        <p class="memory-text">Your little habits. The way you express things. The details I've quietly noticed.</p>
+        <p class="memory-reveal">"It's never the grand gestures. It's the tiny moments that stay with me longest."</p>
+      </div>
+      <div class="memory-box glass reveal" style="--g1:#c9b8e8;--g2:#f0d080;" onclick="toggleMemory(this)">
+        <span class="memory-icon">🌸</span>
+        <p class="memory-title">Your Soft Side</p>
+        <p class="memory-text">When the world doesn't see it, but you let a little of it out anyway.</p>
+        <p class="memory-reveal">"That version of you is my favorite. The one you don't always show — but occasionally do."</p>
+      </div>
+      <div class="memory-box glass reveal" style="--g1:#f2b8c6;--g2:#a8d8ea;" onclick="toggleMemory(this)">
+        <span class="memory-icon">☕</span>
+        <p class="memory-title">Quiet Moments</p>
+        <p class="memory-text">Just existing in the same space, no pressure, no performance.</p>
+        <p class="memory-reveal">"Some of the best moments aren't loud. They're just comfortable, peaceful, and quietly perfect."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ③ CUTE APPRECIATION NOTES -->
+  <section id="notes">
+    <p class="section-label reveal">Chapter 3</p>
+    <div class="divider reveal"></div>
+    <h2 class="section-title reveal">Things I Genuinely <em>Appreciate</em> About You 💌</h2>
+    <p class="section-desc reveal">Little truths I've been holding onto.</p>
+    <div class="notes-wrap">
+      <div class="note-card glass reveal" style="--rot:-2.5deg">
+        <div class="note-icon">💬</div>
+        <p class="note-text">The way you talk — your words always land exactly the way they're meant to.</p>
+      </div>
+      <div class="note-card glass reveal" style="--rot:1.8deg">
+        <div class="note-icon">😤</div>
+        <p class="note-text">Even when you're stubborn about something, I secretly find it adorable.</p>
+      </div>
+      <div class="note-card glass reveal" style="--rot:-1.2deg">
+        <div class="note-icon">🧠</div>
+        <p class="note-text">The way your mind works — you think in a way that's hard to find anywhere else.</p>
+      </div>
+      <div class="note-card glass reveal" style="--rot:2.2deg">
+        <div class="note-icon">🌙</div>
+        <p class="note-text">How you carry so much quietly. That kind of strength doesn't get enough credit.</p>
+      </div>
+      <div class="note-card glass reveal" style="--rot:-1.8deg">
+        <div class="note-icon">😄</div>
+        <p class="note-text">Your laugh — specifically when something genuinely catches you off guard.</p>
+      </div>
+      <div class="note-card glass reveal" style="--rot:1.4deg">
+        <div class="note-icon">🌸</div>
+        <p class="note-text">That you care deeply, even when you pretend you don't. I notice it every time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ④ ADORABLE THINGS -->
+  <section id="adorable">
+    <p class="section-label reveal">Chapter 4</p>
+    <div class="divider reveal"></div>
+    <h2 class="section-title reveal">Things That Make You <em>Irresistibly You</em> 🌟</h2>
+    <p class="section-desc reveal">Honestly? This list could be longer.</p>
+    <div class="adorable-list" id="adorableList">
+      <div class="adorable-item glass">
+        <span class="a-num">01</span>
+        <div class="a-content">
+          <p class="a-title">The way you overthink — and then get it right anyway</p>
+          <p class="a-desc">You stress about it, debate it, maybe spiral a little… and then somehow land perfectly. It's lowkey impressive.</p>
+        </div>
+      </div>
+      <div class="adorable-item glass">
+        <span class="a-num">02</span>
+        <div class="a-content">
+          <p class="a-title">Your "I'm fine" face that fools no one</p>
+          <p class="a-desc">You say you're fine with complete confidence. But there's always just a tiny thing in your eyes. I see it.</p>
+        </div>
+      </div>
+      <div class="adorable-item glass">
+        <span class="a-num">03</span>
+        <div class="a-content">
+          <p class="a-title">How seriously you take things you care about</p>
+          <p class="a-desc">That level of investment is rare. When you care about something, you really care — and it shows.</p>
+        </div>
+      </div>
+      <div class="adorable-item glass">
+        <span class="a-num">04</span>
+        <div class="a-content">
+          <p class="a-title">The little judgments you pass silently</p>
+          <p class="a-desc">You'd never say it out loud. But I know there's an entire internal commentary happening. And I love that about you.</p>
+        </div>
+      </div>
+      <div class="adorable-item glass">
+        <span class="a-num">05</span>
+        <div class="a-content">
+          <p class="a-title">How you exist — just authentically, unapologetically you</p>
+          <p class="a-desc">Not performing. Not shrinking. Just being exactly who you are. That's rarer than you know.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ⑤ INTERACTIVE CAKE -->
+  <section id="cake">
+    <p class="section-label reveal">Chapter 5</p>
+    <div class="divider reveal"></div>
+    <h2 class="section-title reveal">Make a <em>Wish</em> 🎂</h2>
+    <p class="section-desc reveal">Close your eyes, think of something you really want, then blow.</p>
+    <div class="cake-wrap reveal">
+      <div class="cake-svg-wrap">
+        <svg id="cakeSvg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <!-- plate -->
+          <ellipse cx="100" cy="185" rx="80" ry="10" fill="rgba(201,184,232,0.15)"/>
+          <!-- cake bottom layer -->
+          <rect x="25" y="130" width="150" height="55" rx="8" fill="#2a1a4a"/>
+          <rect x="25" y="130" width="150" height="12" rx="3" fill="#3d2060"/>
+          <!-- frosting drips bottom -->
+          <path d="M25 142 Q40 155 55 142 Q70 155 85 142 Q100 155 115 142 Q130 155 145 142 Q160 155 175 142" stroke="#c9b8e8" stroke-width="2.5" fill="none" opacity="0.7"/>
+          <!-- cake top layer -->
+          <rect x="45" y="90" width="110" height="42" rx="8" fill="#3d2060"/>
+          <rect x="45" y="90" width="110" height="12" rx="3" fill="#4e2a7a"/>
+          <!-- frosting drips top -->
+          <path d="M45 102 Q58 113 71 102 Q84 113 97 102 Q110 113 123 102 Q136 113 149 102 Q155 107 155 102" stroke="#f2b8c6" stroke-width="2" fill="none" opacity="0.7"/>
+          <!-- decorations -->
+          <circle cx="70" cy="120" r="5" fill="#f0d080" opacity="0.8"/>
+          <circle cx="100" cy="123" r="4" fill="#f2b8c6" opacity="0.8"/>
+          <circle cx="130" cy="120" r="5" fill="#a8d8ea" opacity="0.8"/>
+          <!-- candles -->
+          <rect id="c1" x="68" y="68" width="8" height="24" rx="3" fill="#f0d080"/>
+          <rect id="c2" x="88" y="62" width="8" height="30" rx="3" fill="#f2b8c6"/>
+          <rect id="c3" x="108" y="65" width="8" height="27" rx="3" fill="#c9b8e8"/>
+          <rect id="c4" x="128" y="68" width="8" height="24" rx="3" fill="#a8d8ea"/>
+          <!-- flames -->
+          <ellipse id="f1" class="flame" cx="72" cy="64" rx="5" ry="8" fill="#ffd700" opacity="0.95"/>
+          <ellipse id="f2" class="flame" cx="92" cy="57" rx="5" ry="8" fill="#ff9060" opacity="0.95"/>
+          <ellipse id="f3" class="flame" cx="112" cy="60" rx="5" ry="8" fill="#ffd700" opacity="0.95"/>
+          <ellipse id="f4" class="flame" cx="132" cy="64" rx="5" ry="8" fill="#ff9060" opacity="0.95"/>
+          <!-- glow under flames -->
+          <ellipse cx="72" cy="68" rx="8" ry="4" fill="#ffd700" opacity="0.25"/>
+          <ellipse cx="92" cy="62" rx="8" ry="4" fill="#ff9060" opacity="0.25"/>
+          <ellipse cx="112" cy="65" rx="8" ry="4" fill="#ffd700" opacity="0.25"/>
+          <ellipse cx="132" cy="68" rx="8" ry="4" fill="#ff9060" opacity="0.25"/>
+        </svg>
+      </div>
+      <button id="blowBtn" onclick="blowCandles()">🌬️ Blow Out the Candles</button>
+      <p id="cakeMsg" class="glass" style="padding:18px 24px;">Close your eyes… take a breath… and make a wish.</p>
+    </div>
+  </section>
+
+  <!-- ⑥ LONG DISTANCE MESSAGE -->
+  <section id="message">
+    <p class="section-label reveal">Chapter 6</p>
+    <div class="divider reveal"></div>
+    <h2 class="section-title reveal">From Wherever <em>I Am</em> 💌</h2>
+    <div class="msg-card glass reveal">
+      <p class="msg-para">Hey Khushi. Happy birthday. <em>For real this time.</em></p>
+      <p class="msg-para">I know I can't be there today. And honestly, that bothers me more than I'll probably say out loud.</p>
+      <p class="msg-para">But I wanted you to know — I thought about what to do. I didn't want to just send a text. You deserve more than that. So I built this instead. Every word of it is genuine, even the silly parts.</p>
+      <p class="msg-para">You're one of those people who makes ordinary conversations feel like something worth remembering. And I don't think you always know that about yourself.</p>
+      <p class="msg-para"><em>You deserve a day that feels as good as you make other people's days feel.</em> So I really hope today is that for you.</p>
+      <p class="msg-para">Genuinely — happy birthday. You're someone worth celebrating. 🌙</p>
+      <div class="msg-sign">— with genuine warmth ✨</div>
+    </div>
+  </section>
+
+  <!-- ⑦ FINAL SURPRISE -->
+  <section id="final">
+    <p class="section-label reveal">The Final Chapter</p>
+    <div class="divider reveal"></div>
+    <div class="final-quote reveal glow-text">
+      "Some people deserve more than a simple birthday text.<br>
+      <em>You're one of those people.</em>"
+    </div>
+    <p class="section-desc reveal" style="margin-top:16px;margin-bottom:24px;">
+      Maybe distance kept me away today. But there was <em style="color:var(--blush)">no way</em> I was letting your birthday feel ordinary.
+    </p>
+    <button class="confetti-btn reveal" onclick="launchConfetti()">🎊 Celebrate! Hit me with the confetti!</button>
+    <p class="final-small reveal">made with genuine care · just for you · happy birthday 🎂</p>
+  </section>
+
+</div><!-- /page -->
+
+<script>
+// ──────────────────────────────────────────
+//  LOADER
+// ──────────────────────────────────────────
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 1800);
+});
+
+// ──────────────────────────────────────────
+//  STAR CANVAS
+// ──────────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('starCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function makeStar() {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.5 + 0.3,
+      a: Math.random(),
+      speed: Math.random() * 0.008 + 0.003,
+      phase: Math.random() * Math.PI * 2
+    };
+  }
+  for (let i = 0; i < 220; i++) stars.push(makeStar());
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const t = Date.now() / 1000;
+    stars.forEach(s => {
+      const alpha = 0.3 + 0.5 * Math.sin(s.phase + t * s.speed * 20);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${alpha * s.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ──────────────────────────────────────────
+//  PARTICLES
+// ──────────────────────────────────────────
+(function() {
+  const wrap = document.getElementById('particlesWrap');
+  const colors = ['rgba(201,184,232,0.8)','rgba(242,184,198,0.8)','rgba(240,208,128,0.8)','rgba(168,216,234,0.8)'];
+  for (let i = 0; i < 28; i++) {
+    const d = document.createElement('div');
+    d.className = 'particle';
+    const size = Math.random() * 8 + 4;
+    d.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      --c:${colors[Math.floor(Math.random()*colors.length)]};
+      --dur:${8 + Math.random()*12}s;
+      --delay:${Math.random()*10}s;
+    `;
+    wrap.appendChild(d);
+  }
+})();
+
+// ──────────────────────────────────────────
+//  BALLOONS
+// ──────────────────────────────────────────
+(function() {
+  const wrap = document.getElementById('balloonsWrap');
+  const cols = ['#f2b8c6','#c9b8e8','#f0d080','#a8d8ea','#ffb3c6','#d4b0ff'];
+  for (let i = 0; i < 10; i++) {
+    const d = document.createElement('div');
+    d.className = 'balloon';
+    d.style.cssText = `
+      left:${5 + Math.random()*90}%;
+      background:${cols[Math.floor(Math.random()*cols.length)]};
+      width:${30+Math.random()*20}px;
+      height:${38+Math.random()*25}px;
+      --bdur:${14+Math.random()*14}s;
+      --bdelay:${Math.random()*16}s;
+    `;
+    wrap.appendChild(d);
+  }
+})();
+
+// ──────────────────────────────────────────
+//  SCROLL REVEAL
+// ──────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// adorable list stagger
+const adorableObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const items = document.querySelectorAll('.adorable-item');
+      items.forEach((item, i) => {
+        setTimeout(() => item.classList.add('visible'), i * 140);
+      });
+    }
+  });
+}, { threshold: 0.1 });
+const adorableSection = document.getElementById('adorableList');
+if (adorableSection) adorableObs.observe(adorableSection);
+
+// ──────────────────────────────────────────
+//  MEMORY BOXES
+// ──────────────────────────────────────────
+function toggleMemory(el) {
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.memory-box.open').forEach(b => b.classList.remove('open'));
+  if (!isOpen) el.classList.add('open');
+}
+
+// ──────────────────────────────────────────
+//  BLOW CANDLES
+// ──────────────────────────────────────────
+let candlesBlown = false;
+const cakeMessages = [
+  "✨ Your wish has been sent into the universe. May it find its way back to you.",
+  "🌙 Whatever you wished for — you deserve it. Every bit of it.",
+  "💫 The stars heard that. Trust me.",
+  "🎂 May this year bring everything you've been quietly hoping for."
+];
+function blowCandles() {
+  if (candlesBlown) return;
+  candlesBlown = true;
+
+  ['f1','f2','f3','f4'].forEach((id, i) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.transition = 'opacity 0.4s, transform 0.4s';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(-20px) scale(0.3)';
+      }
+    }, i * 120);
+  });
+
+  const btn = document.getElementById('blowBtn');
+  btn.disabled = true;
+  btn.style.opacity = '0.4';
+  btn.textContent = '🎂 Wish Made!';
+
+  const msg = cakeMessages[Math.floor(Math.random() * cakeMessages.length)];
+  setTimeout(() => {
+    const msgEl = document.getElementById('cakeMsg');
+    msgEl.style.opacity = '0';
+    setTimeout(() => {
+      msgEl.textContent = msg;
+      msgEl.style.opacity = '1';
+    }, 300);
+  }, 700);
+
+  // mini burst
+  setTimeout(() => spawnBurst(), 900);
+}
+
+function spawnBurst() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = [];
+  const colors = ['#f2b8c6','#c9b8e8','#f0d080','#a8d8ea','#ffffff'];
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight * 0.55;
+
+  for (let i = 0; i < 60; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 2 + Math.random() * 5;
+    particles.push({
+      x: cx, y: cy,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 3,
+      r: 3 + Math.random() * 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 1, decay: 0.02 + Math.random() * 0.02
+    });
+  }
+
+  function animBurst() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      if (p.life <= 0) return;
+      alive = true;
+      p.x += p.vx; p.y += p.vy; p.vy += 0.15;
+      p.life -= p.decay;
+      ctx.globalAlpha = p.life;
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    if (alive) requestAnimationFrame(animBurst);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  animBurst();
+}
+
+// ──────────────────────────────────────────
+//  CONFETTI FINALE
+// ──────────────────────────────────────────
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#f2b8c6','#c9b8e8','#f0d080','#a8d8ea','#ffffff','#ffb3c6','#d4b0ff','#ffe499'];
+  const shapes = ['circle','rect','star'];
+  const pieces = [];
+
+  for (let i = 0; i < 200; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: -20 - Math.random() * 200,
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2 + Math.random() * 4,
+      r: 4 + Math.random() * 6,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      shape: shapes[Math.floor(Math.random() * shapes.length)],
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.2,
+      life: 1,
+      decay: 0.004 + Math.random() * 0.006
+    });
+  }
+
+  let frame = 0;
+  function animConf() {
+    frame++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    pieces.forEach(p => {
+      if (p.life <= 0) return;
+      alive = true;
+      p.x += p.vx + Math.sin(frame * 0.05 + p.y * 0.01) * 0.5;
+      p.y += p.vy;
+      p.vy += 0.04;
+      p.rot += p.rotSpeed;
+      p.life -= p.decay;
+
+      ctx.save();
+      ctx.globalAlpha = p.life;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+
+      if (p.shape === 'circle') {
+        ctx.beginPath(); ctx.arc(0, 0, p.r, 0, Math.PI*2); ctx.fill();
+      } else if (p.shape === 'rect') {
+        ctx.fillRect(-p.r, -p.r/2, p.r*2, p.r);
+      } else {
+        // star
+        ctx.beginPath();
+        for (let j = 0; j < 5; j++) {
+          const a = (j * 4 * Math.PI) / 5 - Math.PI / 2;
+          const b = a + (2 * Math.PI) / 10;
+          j === 0 ? ctx.moveTo(Math.cos(a)*p.r, Math.sin(a)*p.r) : ctx.lineTo(Math.cos(a)*p.r, Math.sin(a)*p.r);
+          ctx.lineTo(Math.cos(b)*p.r*0.4, Math.sin(b)*p.r*0.4);
+        }
+        ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    });
+    ctx.globalAlpha = 1;
+    if (alive) requestAnimationFrame(animConf);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  animConf();
+}
+</script>
+</body>
+</html>
